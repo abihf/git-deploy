@@ -1,0 +1,74 @@
+#!/bin/sh
+#  git-deploy 0.1-alpha
+#  Copyright (C) {year}  {name of author}
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+HOOKS_DIR="/usr/share/git-deploy/hooks"
+MASTER_BRANCH=master
+REMOTE_NAME=origin
+
+
+main() {
+    # read input
+    read oldrev newrev refname
+
+    # branch name
+    branch=`echo "$refname" | cut -d/ -f3`
+
+    # git-deploy only process master branch
+    if [ "$MASTER_BRANCH" = "$branch" ]; then
+        
+        # get target directory
+	    deploy_target=`git config --get deploy.target`
+        
+        # target directory not set
+	    if [ -z "$deploy_target" ]; then
+		    echo "target directory have not been set";
+		    echo "run (git config --add deploy.target /path/to/deploy/target) on git bare"
+		    exit 1
+	    fi
+	
+	    echo " - deploying to $deploy_target"
+	    echo " - updating git from ${oldrev:0:10} to ${newrev:0:10}"
+	    export GIT_DIR="$deploy_target/.git"
+	    export GIT_WORK_TREE="$deploy_target"
+	    if [ -e "$deploy_target/.empty" ]; then
+	        rm "$deploy_target/.empty"
+	        git init
+	        git remote add $REMOTE_NAME "`pwd`"
+	    fi
+        # use checkout ? i have no idea
+        git pull $REMOTE_NAME $MASTER_BRANCH
+	    unset GIT_WORK_TREE
+	    unset GIT_DIR
+	    
+	    echo " - checking hooks"
+	    if [ -e "$deploy_target/package.json" ]; then
+		    run_hook npm "$deploy_target"
+	    fi
+	    if [ -e "$deploy_target/composer.json" ]; then
+		    run_hook composer "$deploy_target"
+	    fi
+     
+	    echo "Deploying finished :)"
+    fi
+}
+
+run_hook() {
+    $HOOKS_DIR/$1 "$2"
+}
+
+
+main $@

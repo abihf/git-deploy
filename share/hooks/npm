@@ -1,0 +1,4 @@
+#!/bin/sh
+deploy_target="$1"
+
+cd "$deploy_target"; npm install; cd -

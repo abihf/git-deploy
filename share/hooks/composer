@@ -1,0 +1,12 @@
+#!/bin/sh
+deploy_target="$1"
+
+composer="$deploy_target/composer.phar"
+
+if [ ! -e "$composer" ]; then
+    echo " - downloading composer.phar"
+    wget -O "$composer" https://getcomposer.org/composer.phar
+fi
+
+echo " - runing composer install"
+php "$composer" --working-dir="$deploy_target" install

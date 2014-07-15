@@ -1,0 +1,71 @@
+#!/bin/sh
+#  git-deploy 0.1-alpha
+#  Copyright (C) {year}  {name of author}
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+APP_NAME="git-deploy"
+APP_VERSION=0.1-alpha
+HOOK_PATH="`which git-deploy-hook`"
+
+main() {
+    case "$1" in
+        "create")
+            create "$2" "$3";;
+        *)
+            help ;;
+    esac
+}
+
+create() {
+    repo_dir=$(rel_to_abs "$1")
+    deploy_dir=$(rel_to_abs "$2")
+    
+    mkdir -p "$repo_dir"
+    mkdir -p "$deploy_dir"
+    
+    GIT_DIR="$repo_dir" git --bare init
+    GIT_DIR="$repo_dir" git config --add deploy.target "$deploy_dir"
+    install_hook "$repo_dir"
+    
+    touch "$deploy_dir/.empty"
+}
+
+install_hook() {
+    repo_dir=$(rel_to_abs "$1")
+    hook_file="$repo_dir/hooks/post-receive"
+    if [ -e "$hook_file" ]; then
+        echo "Hook found. try to append our hook"
+        echo "exec $HOOK_PATH $@" >> "$hook_file"
+    else
+        ln -s $HOOK_PATH "$hook_file"
+    fi
+    
+}
+
+help() {
+    echo "$APP_NAME $APP_VERSION"
+    echo "Use: $APP_NAME create <repo_dir> <deploy_dir>"
+}
+
+rel_to_abs() {
+    path="$1"
+    if [ "${path:0:1}" = "/" ]; then
+        echo $path
+    else
+        echo $(pwd)/$path
+    fi
+}
+
+main $@
