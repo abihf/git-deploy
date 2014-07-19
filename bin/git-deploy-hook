@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 #  git-deploy 0.1-alpha
-#  Copyright (C) {year}  {name of author}
+#  Copyright (C) 2014 Abi Hafshin <abi@hafs.in>
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
