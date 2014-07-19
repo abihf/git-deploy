@@ -9,7 +9,7 @@ Dari masalah tersebut, gue punya ide simple. Gimana kalo kita transfer source co
   - Data yang diupload cuma diff-nya doang. Jadi kalo lu ngedit 2 baris file yang ukurannya 5MB, yang bakal diupload cuma yang dua baris itu doang.
   - Shit man, ini git. Kalo yang nge-push (upload) lebih dari satu orang, biasanya suka ada file yang konflik. Tapi kalo pake git, lu bisa dengan mudah lihat file yang konflik tadi baris-per-baris. Bandingin kalo pake ftp!
 
-Masalahnya seting git sebagai media transfer ngga segampang mencintai seseorang, brow, Tapi ga sesulit melupakan sesorang juga sih. Makanya gue bikin tool ini agar hidup menjadi lebih mudah.
+> **Masalahnya seting git sebagai media transfer ngga segampang mencintai seseorang, brow, Tapi ga sesulit melupakan sesorang juga sih. Makanya gue bikin tool ini agar hidup menjadi lebih mudah.**
 
 
 Version
@@ -43,7 +43,7 @@ Installation
 Akses server lu via ssh, terus jalanin ini:
 
 ```sh
-git clone git@github.com:abiehaf/git-deploy.git git-deploy
+git clone https://github.com/abiehaf/git-deploy.git git-deploy
 cd git-deploy
 sudo ./install.sh
 ```
